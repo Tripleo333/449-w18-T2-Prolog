@@ -8,15 +8,15 @@ init_p(Var, Old, New) :- Old is 0, g_read(Var, Old) , g_assignb(Var, New).
 % Only redoes soft constraints
 bnb(T) :- hard_constr(T) , ! , init_p(x,P,0) , fd_minimize(soft_constr(T, P), P) , !.
 
-% soft_constr([A,B,C]) :- P is 0, (C is 65 , P is 4) ; (A is 65 , P is P+6) ; (A is B-1, P is P+3) ; P < MIN_P.
 soft_constr([_1,_2,_3,_4,_5,_6,_7,_8], P) :- 
-    (_1 #\= 65 ; add_p(p,P,4)) ,   % machine penalties
-    (_7 #\= 65 ; add_p(p,p,6)) ,   % machine penalties
-    (_2 #\= _1-1 ; add_p(p,p,3)) ,   % too near penalties
-    (_2 #\= 67; add_p(p,p,7)) ,
-    fd_labeling(p3).
+    (_1 #\= 65 ; add_p(x,P,4)) ,   % machine penalties
+    (_7 #\= 65 ; add_p(y,P,6)) ,   % machine penalties
+    (_2 #\= _1-1 ; add_p(z,P,3)) ,   % too near penalties
+    (_2 #\= 67; add_p(w,P,7)) ,
+    fd_labeling(P).
 
 % T parameter has to receive [A,B,C] for this to make sense
+% values of predicates are values of ASCII characters
 hard_constr(T) :- 
     T = [_1,_2,_3,_4,_5,_6,_7,_8], 
     fd_domain(T, 65, 72) , 
