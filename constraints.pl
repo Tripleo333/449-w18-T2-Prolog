@@ -23,6 +23,8 @@ mp(4,'D',13).
 
 tnp('X','Y',0).
 tnp('E','F',17).
+tnp('F','G',3).
+tnp('H','A',1).
    
     
     %checkFPA(Task List, Current Machine)
@@ -61,28 +63,22 @@ checkHARD([H|T]) :- checkFPA([H|T],1),
 
     %getMP(Current Machine, Task List, Penalty)
     % total penalty value is returned through the third parameter
-    
-    % getting instantiation error
-getMP(_,[],_).
-getMP(Mach,[Task|T],Total) :- mp(Mach,Task,Z) -> NewTotal is Total + Z, 
+getMP(_,[],0).
+getMP(Mach,[Task|T],Total) :- mp(Mach,Task,Z) -> NewMach is Mach + 1,
+    getMP(NewMach,T,NewTotal),
+    Total is NewTotal + Z, !;
     NewMach is Mach + 1,
-    getMP(NewMach,T,NewTotal), !; 
-    NewMach is Mach + 1, 
     getMP(NewMach, T, Total).
 
     %getTNP(Currrent Machine, Task List, Penalty)
     % total penalty value is returned through the third parameter
-
-    % getting instantiation error
-getTNP(_,[],_).
-getTNP(Head,[Last|[]],Total) :- tnp(Last,Head,Z) -> NewTotal is Total + Z, 
-    getTNP(_,[],NewTotal), !;
-    NewTotal is Total + Z,
-    getTNP(_,[],NewTotal).
-getTNP(Head,[T1|[T2|T]],Total) :- tnp(T1,T2,Z) -> NewTotal is Total + Z, 
-    getTNP(Head,[T2|T],NewTotal), !; 
-    NewTotal is Total + Z,
-    getTNP(Head,[T2|T],NewTotal).
+getTNP(_,[],0).
+getTNP(Head,[Last|[]],Total) :- tnp(Last,Head,Z) -> Total is Z, !;
+    Total is 0.
+getTNP(Head,[T1|[T2|T]],Total) :- tnp(T1,T2,Z) -> getTNP(Head,[T2|T],NewTotal),
+    Total is NewTotal + Z, !; 
+    getTNP(Head,[T2|T],NewTotal),
+    Total is NewTotal.
 
     %getSOFT(Task List, Penalty Total)
     % total penalty value is returned through the second parameter
