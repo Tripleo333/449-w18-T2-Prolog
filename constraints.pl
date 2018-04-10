@@ -22,7 +22,7 @@ mp(3,'C',12).
 mp(4,'D',13).
 
 tnp('X','Y',0).
-tnp('E','F',17).
+%tnp('E','F',17).
 tnp('F','G',3).
 tnp('H','A',1).
    
@@ -68,13 +68,13 @@ getMP(Mach,[Task|T],Total) :- mp(Mach,Task,Z) -> NewMach is Mach + 1,
     getMP(NewMach,T,NewTotal),
     Total is NewTotal + Z, !;
     NewMach is Mach + 1,
-    getMP(NewMach, T, Total).
+    getMP(NewMach, T, Total), !.
 
     %getTNP(Currrent Machine, Task List, Penalty)
     % total penalty value is returned through the third parameter
 getTNP(_,[],0).
 getTNP(Head,[Last|[]],Total) :- tnp(Last,Head,Z) -> Total is Z, !;
-    Total is 0.
+    Total is 0, !.
 getTNP(Head,[T1|[T2|T]],Total) :- tnp(T1,T2,Z) -> getTNP(Head,[T2|T],NewTotal),
     Total is NewTotal + Z, !; 
     getTNP(Head,[T2|T],NewTotal),
