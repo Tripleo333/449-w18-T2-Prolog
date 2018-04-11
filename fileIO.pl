@@ -46,10 +46,21 @@
     parser([CurrLine|InputLines],OutputLine) :-
     phrase(checkNameStr, CurrLine) ->  % if Name: is correct eat next line
     skipWhite(InputLines,InputLines2),
-    
+    phrase(checkFPAStr,CurrLine), ->  % if "forced partial assignment:" is correct
+    checkFPAparse(InputLines,InputLines2),
+    !; % else
+    OutputLine = 'Error while parsing input file.',!.
     !; % else
     OutputLine = 'Error while parsing', !.
 
+    checkFPAparse([CurrLine|InputLines], ReturnLines) :-
+    phrase(machTaskParseError,CurrLine) ->  %check if is a valid format (X,Y)
+    checkFPA(CurrLine,ReturnLines), !;
+    ReturnLines = [CurrLine|InputLines],!.
+
+	checkFPA(CurrLine,ReturnLines) :-
+    phrase(machTaskInvalid,CurrLine)->  %check if is a valid pair ie (1,B)
+    assertz(fpa(CurrLine)),
 
     skipWhite([CurrLine|InputLines], ReturnLines) :-
     phrase(CurrLine,isWhitespace) ->
@@ -63,6 +74,8 @@ ReturnLines = [CurrLine|InputLines],!.
     
     
     checkNameStr --> "Name:", isWhitespace,!.
+    
+    checkFPAStr --> "forced partial assignment:", isWhitespace,!.
     
     machTaskParseError --> "(", startIsAnyNumber, ",", isAnyLetter, ")", isWhitespace, !.
 
