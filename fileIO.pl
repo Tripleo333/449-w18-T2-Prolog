@@ -57,16 +57,18 @@
     getHead(InputLines4, Head4, InputLines4New),
     write('Actual Name: '),
     write(Head4),
-    skipWhite(InputLines4New,InputLines5),
+     skipWhite(InputLines4New,InputLines5),
     write('welost AF'),
     member(CurrLine2,InputLines5),
     write(CurrLine2),
     atom_codes(CurrLine2,CurrLineAtoms2),
+    write('hey'),
     phrase(checkFPAStr, CurrLineAtoms2),
-    write('We after FPA\n'),
-
-
-    !; % else
+    write('Currline is forced partial assignment: \n'),
+    checkFPAparse(InputLines5,InputLines6),
+    write('it all work\n'),
+    !;
+ % else
     write('else Currline is NOT name: \n'),
     OutputLine = 'Error while parsing', !.
 
@@ -75,7 +77,26 @@
     Head2 = Head,
     List2 = List, !.
 
-    
+    checkFPAparse([CurrLine|InputLines], ReturnLines) :-
+    atom_codes(CurrLine,CurrLineAtom),
+    write('atom codes worked1\n'),
+    phrase(machTaskParseError,CurrLineAtom) ->
+    %if
+    checkFPA(CurrLineAtom,InputLines,ReturnLines),
+    !;
+%else
+    write('not in if\n'),
+    ReturnLines = 'Error while parsing input file',
+    !.
+
+    checkFPA(CurrLineAtom,InputLines,ReturnLines) :-
+    phrase(machTaskInvalid,CurrLineAtom) ->
+    write('is this work?\n'),
+    getPair(CurrLineAtom,FpaPair),
+write(FpaPair),!;
+    ReturnLines = 'Invalid mach/task',!.
+
+
     skipWhite([CurrLine|InputLines], ReturnLines) :-
     write('skip whites current line: '),
     write(CurrLine),
@@ -181,11 +202,10 @@
 
 
 
-/*
     % X = list of chars to take from
     % Y = list where fisrt element is ascii code of machine, second element is ascii code of task
     getPair(X,Y) :- nth(2, X, M), nth(4, X, T), Y = [M,T], !.
-    
+/*    
     removeSpaces([], [], [], []) :- [], !.
     removeSpaces([X|Xs], Y, Z, F) :- X #> 32, append(Y,[X],R), removeSpaces(Xs, R, Z, F) , !.
     removeSpaces([X|Xs], Y, Z, F) :- X #=< 32, append(Z, [Y], R), removeSpaces(Xs, [], R, F), !.
@@ -200,9 +220,20 @@
     
     % X = machine penalties line
     % Y = list of integers from the mach penalties line
-    getPenaltiesLine(X, Y) :- removeSpaces(X, [], [], F), reverse(F, R), removeBlanks(R, S), % S is now a list of lists of character codes.  Each list within S can be converted to a number via number_codes
+    getPenaltiesLine(X, Y) :- removeSpaces(X, [], [], F), reverse(F, R), removeBlanks(R, S), !.% S is now a list of lists of character codes.  Each list within S can be converted to a number via number_codes
     
     % X = list of chars to take from
     % Y = list where first element = ascii code of first task, second element = ascii code of second task, third element is list of ascii character codes which represent an integer
     getTriple(X,Y) :- nth(2, X, TONE), nth(4, X, TTWO), subtract(X, ["A", "B", "C", "D", "E", "F", "G", "H", ",", "(", ")", " ", "\t", "\n"], F), Y = [TONE, TTWO, F], !.
 */
+
+
+[[Listone], [Listtwo], [A, B]]
+
+% X = list of lists of character codes
+% Y = empty list
+% F = output
+convertCodeList([X|Xs], Y, F) :- number_codes(Z, X), append(Y, [Z], S), convertCodeList([Xs], S, []), !.
+convertCodeList(X, Y, F) :- number_codes(R, X), append(Y, [R], F), !.
+
+
