@@ -228,12 +228,5 @@ write(FpaPair),!;
 */
 
 
-[[Listone], [Listtwo], [A, B]]
-
-% X = list of lists of character codes
-% Y = empty list
-% F = output
-convertCodeList([X|Xs], Y, F) :- number_codes(Z, X), append(Y, [Z], S), convertCodeList([Xs], S, []), !.
-convertCodeList(X, Y, F) :- number_codes(R, X), append(Y, [R], F), !.
 
 
