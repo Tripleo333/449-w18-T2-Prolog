@@ -45,9 +45,8 @@
 
     parser(InputLines,OutputLine) :-
     skipWhite(InputLines,InputLines2),
-    member(CurrLine,InputLines2),
     getHead(InputLines2,Head, List),
-    atom_codes(CurrLine,CurrLineAtoms),
+    atom_codes(Head,CurrLineAtoms),
     phrase(checkNameStr, CurrLineAtoms) ->
     OutputLine = 'successfully read the name',
     write('if currline is Name: \n'),
@@ -57,16 +56,21 @@
     getHead(InputLines4, Head4, InputLines4New),
     write('Actual Name: '),
     write(Head4),
-     skipWhite(InputLines4New,InputLines5),
+    skipWhite(InputLines4New,InputLines5),
     write('welost AF'),
-    member(CurrLine2,InputLines5),
-    write(CurrLine2),
-    atom_codes(CurrLine2,CurrLineAtoms2),
+    getHead(InputLines5,Head5,InputLines5New),
+    write(Head5),
+    atom_codes(Head5,CurrLineAtoms2),
     write('hey'),
     phrase(checkFPAStr, CurrLineAtoms2),
     write('Currline is forced partial assignment: \n'),
-    checkFPAparse(InputLines5,InputLines6),
+    checkFPAparse(InputLines5New,InputLines6),
     write('it all work\n'),
+    skipWhite(InputLines6,InputLines7),
+    getHead(InputLines7,Head7,InputLines7New),
+    atom_codes(Head7,CurrLineAtoms7),
+    phrase(checkFMStr,CurrLineAtoms7),
+    write(Head7),
     !;
  % else
     write('else Currline is NOT name: \n'),
@@ -77,24 +81,26 @@
     Head2 = Head,
     List2 = List, !.
 
-    checkFPAparse([CurrLine|InputLines], ReturnLines) :-
-    atom_codes(CurrLine,CurrLineAtom),
+    checkFPAparse(InputLinesFPA, ReturnLines) :-
+    getHead(InputLinesFPA, HeadFPA, InputLinesNewFPA),
+    write(HeadFPA),
+    atom_codes(HeadFPA,CurrLineAtom),
     write('atom codes worked1\n'),
     phrase(machTaskParseError,CurrLineAtom) ->
     %if
-    checkFPA(CurrLineAtom,InputLines,ReturnLines),
+    checkFPA(CurrLineAtom,InputLinesNewFPA,ReturnLines),
     !;
 %else
     write('not in if\n'),
-    ReturnLines = 'Error while parsing input file',
     !.
 
     checkFPA(CurrLineAtom,InputLines,ReturnLines) :-
     phrase(machTaskInvalid,CurrLineAtom) ->
     write('is this work?\n'),
     getPair(CurrLineAtom,FpaPair),
-write(FpaPair),!;
-    ReturnLines = 'Invalid mach/task',!.
+    write(FpaPair),
+    checkFPAparse(InputLines,ReturnLines),!;
+    write('checkFPA\n'),!.
 
 
     skipWhite([CurrLine|InputLines], ReturnLines) :-
