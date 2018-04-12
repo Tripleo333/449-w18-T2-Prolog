@@ -1,4 +1,4 @@
-:- [rules_machpen2]. 
+:- [rules_invalidtoonear]. 
     
     %checkFPA(Task List, Current Machine)
     % first call is with current machine 1
@@ -22,12 +22,12 @@ checkTNT([],_).
 checkTNT([Last|[]],Head) :- \+ tnt(Last,Head), 
     checkTNT([],_).
 checkTNT([H|[N|T]],Head) :- \+ tnt(H,N), 
-    checkTNT(T,Head).
+    checkTNT([N|T],Head).
 
     %checkHARD(Task List)
     % simply send the task list
     % will return true or false
-checkHARD([H|T]) :- checkFPA([H|T],1) -> checkFM([H|T],1) -> checkTNT([H|T],H).
+% checkHARD([H|T]) :- checkFPA([H|T],1) -> checkFM([H|T],1) -> checkTNT([H|T],H).
       
 
     %getMP(Current Machine, Task List, Penalty)
