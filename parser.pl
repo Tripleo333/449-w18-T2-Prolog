@@ -37,7 +37,16 @@
     open(OutputFile, write, OS),
     (read_file(InputFile,InputLines),
      % this gets the number of lines read in and outputs it to the screen.
-     parser(InputLines, OutputLine),
+     parser(InputLines,[],Error),
+     length(Error,ErrorLen),
+     (ErrorLen #> 0 -> 													%if Error.size() > 0
+     member(X,Error),
+     write(OS, X),nl(OS); 										%else
+		 (bnb([A,B,C,D,E,F,G,H],P)->
+     name(S,[A,B,C,D,E,F,G,H]), number_atom(P,Ps), write(OS,S),nl(OS);
+     (write(OS,'No valid solution possible!'),nl(OS)),
+     )
+     ),
      write(OS, OutputLine),nl(OS);
      close(OS)
     ),
